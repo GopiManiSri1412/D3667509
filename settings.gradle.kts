@@ -10,7 +10,6 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
-
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -18,10 +17,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
-
 }
-
-
 
 rootProject.name = "Space Viewer App"
 include(":app")
