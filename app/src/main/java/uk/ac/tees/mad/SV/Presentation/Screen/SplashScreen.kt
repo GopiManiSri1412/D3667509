@@ -19,10 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import uk.ac.tees.mad.SV.Presentation.Navigation.SpaceNavigation
 import uk.ac.tees.mad.SV.R
 import uk.ac.tees.mad.SV.ui.theme.lobster
 
@@ -33,12 +35,15 @@ fun SplashScreen(navController: NavController) {
     LaunchedEffect(Unit) {
         scale.animateTo(
             targetValue = 1f,
-            animationSpec = tween(durationMillis = 1000, easing = EaseOutBounce)
+            animationSpec = tween(durationMillis = 3000, easing = EaseOutBounce)
         )
+        navController.navigate(SpaceNavigation.LoginScreen.route){
+            popUpTo(0)
+        }
     }
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background // Ensure background changes based on theme
+        color = MaterialTheme.colorScheme.background
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -52,6 +57,7 @@ fun SplashScreen(navController: NavController) {
                     .size(200.dp)
                     .scale(scale.value)
                     .clip(RoundedCornerShape(20.dp))
+                    .shadow(20.dp)
             )
             Text(text = "Space Viewer", fontSize = 30.sp, fontFamily = lobster)
         }
