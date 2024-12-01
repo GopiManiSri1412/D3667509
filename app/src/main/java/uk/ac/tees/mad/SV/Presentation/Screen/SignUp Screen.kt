@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.SV.Presentation.Screen
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -77,7 +78,8 @@ fun SignUpScreen(navController: NavHostController, viewModel: SpaceViewModel) {
     } else {
         passCorrect.value = false
     }
-    LaunchedEffect(key1 = signed) {
+    LaunchedEffect(key1 = signed.value) {
+        Log.d("Signed", signed.value.toString())
         if (signed.value) {
             navController.navigate(SpaceNavigation.HomeScreen.route){
                 popUpTo(0)

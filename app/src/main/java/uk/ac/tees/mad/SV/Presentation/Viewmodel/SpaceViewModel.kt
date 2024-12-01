@@ -1,19 +1,24 @@
 package uk.ac.tees.mad.SV.Presentation.Viewmodel
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.api.Authentication
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import uk.ac.tees.mad.SV.Data.Remote.NasaApi
 import javax.inject.Inject
 
 @HiltViewModel
 class SpaceViewModel @Inject constructor(
     private val authentication: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val api: NasaApi
 ) : ViewModel() {
 
     val loading = mutableStateOf(false)
@@ -22,6 +27,7 @@ class SpaceViewModel @Inject constructor(
         if(authentication.currentUser != null){
             signed.value = true
             getUserDetails()
+            fetchApi()
         }
     }
 
@@ -63,5 +69,12 @@ class SpaceViewModel @Inject constructor(
     }
 
     private fun getUserDetails() {
+    }
+
+    fun fetchApi() {
+        viewModelScope.launch {
+            val response = api.fetchApod("TWfxRVcoV13BrOchR0hZf2osOjdk5WfnQSvJvUiM")
+            Log.d("Api", response.body().toString())
+        }
     }
 }
