@@ -5,5 +5,4 @@ sealed class SpaceNavigation(val route : String) {
     object LoginScreen : SpaceNavigation("login_screen")
     object RegisterScreen : SpaceNavigation("register_screen")
     object HomeScreen : SpaceNavigation("home_screen")
-
 }

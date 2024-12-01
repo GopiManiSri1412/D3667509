@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -26,12 +27,12 @@ import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,16 +50,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import uk.ac.tees.mad.SV.Presentation.Navigation.SpaceNavigation
+import uk.ac.tees.mad.SV.Presentation.Viewmodel.SpaceViewModel
 import uk.ac.tees.mad.SV.R
 import uk.ac.tees.mad.SV.ui.theme.lobster
 import uk.ac.tees.mad.SV.ui.theme.sofadi_one
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(navController: NavHostController, viewModel: SpaceViewModel) {
     val context = LocalContext.current
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val emailCorrect = remember { mutableStateOf(false) }
+    val loading = viewModel.loading
+    val signed = viewModel.signed
     if (email.value.contains("@gmail.com")) {
         emailCorrect.value = true
     } else {
@@ -73,6 +77,13 @@ fun LoginScreen(navController: NavHostController) {
         passCorrect.value = true
     } else {
         passCorrect.value = false
+    }
+    LaunchedEffect(key1 = signed) {
+        if (signed.value) {
+            navController.navigate(SpaceNavigation.HomeScreen.route){
+                popUpTo(0)
+            }
+        }
     }
 
     Surface(
@@ -174,7 +185,7 @@ fun LoginScreen(navController: NavHostController) {
                 Button(
                     onClick = {
                         if (passCorrect.value) {
-                            /*TODO*/
+                            viewModel.logIn(context, email.value, password.value)
                         } else {
                             Toast.makeText(
                                 context,
@@ -188,16 +199,20 @@ fun LoginScreen(navController: NavHostController) {
                         .fillMaxWidth()
                         .padding(horizontal = 1.dp)
                 ) {
-                    Text(
-                        text = "Log in",
-                        fontFamily = lobster,
-                        fontSize = 22.sp,
-                        color = colorScheme.background
-                    )
+                    if (loading.value) {
+                        CircularProgressIndicator()
+                    }else {
+                        Text(
+                            text = "Log in",
+                            fontFamily = lobster,
+                            fontSize = 22.sp,
+                            color = colorScheme.background
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(30.dp))
                 Row {
-                    Text(text = "New Here?", fontFamily = sofadi_one, fontSize = 20.sp)
+                    Text(text = "New Here?", fontFamily = sofadi_one, fontSize = 20.sp, color = colorScheme.onSurface)
                     Text(
                         text = " Sign up!",
                         fontFamily = lobster,

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -21,6 +22,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Button
@@ -29,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,17 +48,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import uk.ac.tees.mad.SV.Presentation.Navigation.SpaceNavigation
+import uk.ac.tees.mad.SV.Presentation.Viewmodel.SpaceViewModel
 import uk.ac.tees.mad.SV.R
 import uk.ac.tees.mad.SV.ui.theme.lobster
 import uk.ac.tees.mad.SV.ui.theme.sofadi_one
 
 @Composable
-fun SignUpScreen(navController: NavHostController) {
+fun SignUpScreen(navController: NavHostController, viewModel: SpaceViewModel) {
     val context = LocalContext.current
     val name = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val emailCorrect = remember { mutableStateOf(false) }
+    val signed = viewModel.signed
+    val loading = viewModel.loading
     if (email.value.contains("@gmail.com")) {
         emailCorrect.value = true
     } else {
@@ -71,7 +77,13 @@ fun SignUpScreen(navController: NavHostController) {
     } else {
         passCorrect.value = false
     }
-
+    LaunchedEffect(key1 = signed) {
+        if (signed.value) {
+            navController.navigate(SpaceNavigation.HomeScreen.route){
+                popUpTo(0)
+            }
+        }
+    }
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -86,6 +98,31 @@ fun SignUpScreen(navController: NavHostController) {
                 modifier = Modifier.padding(60.dp)
             )
             Column(modifier = Modifier.padding(40.dp)) {
+                TextField(
+                    value = name.value,
+                    onValueChange = { name.value = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.Transparent),
+                    colors = TextFieldDefaults.textFieldColors(
+                        trailingIconColor = colorScheme.primary,
+                        placeholderColor = colorScheme.primary,
+                        textColor = colorScheme.primary,
+                        backgroundColor = Color.Transparent,
+                        cursorColor = colorScheme.primary,
+                        focusedIndicatorColor = colorScheme.primary,
+                        unfocusedIndicatorColor = colorScheme.primary
+                    ),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Person,
+                            contentDescription = null,
+                            tint = colorScheme.primary
+                        )
+                    },
+                    placeholder = { Text(text = "Your Name") },
+                )
+                Spacer(modifier = Modifier.height(20.dp))
                 TextField(
                     value = email.value,
                     onValueChange = { email.value = it },
@@ -170,12 +207,12 @@ fun SignUpScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(30.dp))
                 Button(
                     onClick = {
-                        if (passCorrect.value) {
-                            /*TODO*/
+                        if (passCorrect.value && name.value.isNotEmpty()) {
+                            viewModel.signUp(context, name.value, email.value, password.value)
                         } else {
                             Toast.makeText(
                                 context,
-                                "Wrong Password Format",
+                                "Kindly put the credentials correctly!",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -185,19 +222,23 @@ fun SignUpScreen(navController: NavHostController) {
                         .fillMaxWidth()
                         .padding(horizontal = 1.dp)
                 ) {
-                    Text(
-                        text = "Sign Up",
-                        fontFamily = lobster,
-                        fontSize = 22.sp,
-                        color = colorScheme.background,
-                        modifier = Modifier.clickable {
-                            navController.navigate(SpaceNavigation.LoginScreen.route)
-                        }
-                    )
+                    if (loading.value) {
+                        CircularProgressIndicator()
+                    }else {
+                        Text(
+                            text = "Sign Up",
+                            fontFamily = lobster,
+                            fontSize = 22.sp,
+                            color = colorScheme.background,
+                            modifier = Modifier.clickable {
+                                navController.navigate(SpaceNavigation.LoginScreen.route)
+                            }
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(30.dp))
                 Row {
-                    Text(text = "New Here?", fontFamily = sofadi_one, fontSize = 20.sp)
+                    Text(text = "Already User?", fontFamily = sofadi_one, fontSize = 20.sp, color = colorScheme.onSurface)
                     Text(
                         text = " Log in!",
                         fontFamily = lobster,

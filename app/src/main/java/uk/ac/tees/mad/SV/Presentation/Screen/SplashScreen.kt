@@ -25,20 +25,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import uk.ac.tees.mad.SV.Presentation.Navigation.SpaceNavigation
+import uk.ac.tees.mad.SV.Presentation.Viewmodel.SpaceViewModel
 import uk.ac.tees.mad.SV.R
 import uk.ac.tees.mad.SV.ui.theme.lobster
 
 @Composable
-fun SplashScreen(navController: NavController) {
+fun SplashScreen(navController: NavController, viewModel: SpaceViewModel) {
     val scale = remember { Animatable(0f) }
+    val signed = viewModel.signed
 
     LaunchedEffect(Unit) {
         scale.animateTo(
             targetValue = 1f,
             animationSpec = tween(durationMillis = 3000, easing = EaseOutBounce)
         )
-        navController.navigate(SpaceNavigation.LoginScreen.route){
-            popUpTo(0)
+        if (signed.value){
+            navController.navigate(SpaceNavigation.HomeScreen.route){
+                popUpTo(0)
+            }
+        }else {
+            navController.navigate(SpaceNavigation.LoginScreen.route) {
+                popUpTo(0)
+            }
         }
     }
     Surface(
