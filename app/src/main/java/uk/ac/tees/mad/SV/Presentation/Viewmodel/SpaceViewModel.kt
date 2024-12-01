@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import uk.ac.tees.mad.SV.Data.Remote.Apod
 import uk.ac.tees.mad.SV.Data.Remote.NasaApi
 import javax.inject.Inject
 
@@ -23,6 +24,7 @@ class SpaceViewModel @Inject constructor(
 
     val loading = mutableStateOf(false)
     val signed = mutableStateOf(false)
+    val apod = mutableStateOf<Apod?>(null)
     init {
         if(authentication.currentUser != null){
             signed.value = true
@@ -75,6 +77,7 @@ class SpaceViewModel @Inject constructor(
         viewModelScope.launch {
             val response = api.fetchApod("TWfxRVcoV13BrOchR0hZf2osOjdk5WfnQSvJvUiM")
             Log.d("Api", response.body().toString())
+            apod.value = response.body()
         }
     }
 }
