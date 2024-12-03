@@ -25,15 +25,16 @@ class SpaceViewModel @Inject constructor(
     val loading = mutableStateOf(false)
     val signed = mutableStateOf(false)
     val apod = mutableStateOf<Apod?>(null)
+
     init {
-        if(authentication.currentUser != null){
+        if (authentication.currentUser != null) {
             signed.value = true
             getUserDetails()
             fetchApi()
         }
     }
 
-    fun signUp(context: Context, name: String, email: String, password:String){
+    fun signUp(context: Context, name: String, email: String, password: String) {
         loading.value = true
         authentication.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
             val user = hashMapOf(
@@ -45,27 +46,27 @@ class SpaceViewModel @Inject constructor(
                 loading.value = false
                 signed.value = true
                 getUserDetails()
-                Toast.makeText(context,"Sign up successful",Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Sign up successful", Toast.LENGTH_LONG).show()
             }.addOnFailureListener {
                 loading.value = false
-                Toast.makeText(context,"Sign up failed",Toast.LENGTH_LONG).show()
+                Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
             }
         }.addOnFailureListener {
             loading.value = false
-            Toast.makeText(context,"Sign up failed",Toast.LENGTH_LONG).show()
+            Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
         }
     }
 
-    fun logIn(context: Context, email: String, password: String){
+    fun logIn(context: Context, email: String, password: String) {
         loading.value = true
         authentication.signInWithEmailAndPassword(email, password).addOnSuccessListener {
             loading.value = false
             signed.value = true
             getUserDetails()
-            Toast.makeText(context,"Log in successful",Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Log in successful", Toast.LENGTH_LONG).show()
         }.addOnFailureListener {
             loading.value = false
-            Toast.makeText(context,"Log in failed",Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Log in failed", Toast.LENGTH_LONG).show()
 
         }
     }
@@ -74,10 +75,12 @@ class SpaceViewModel @Inject constructor(
     }
 
     fun fetchApi() {
+        loading.value = true
         viewModelScope.launch {
             val response = api.fetchApod("TWfxRVcoV13BrOchR0hZf2osOjdk5WfnQSvJvUiM")
             Log.d("Api", response.body().toString())
             apod.value = response.body()
+            loading.value = false
         }
     }
 }

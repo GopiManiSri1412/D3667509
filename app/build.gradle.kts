@@ -43,7 +43,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.7"
     }
     packaging {
         resources {
@@ -53,6 +53,8 @@ android {
 }
 
 dependencies {
+
+    implementation ("com.google.accompanist:accompanist-swiperefresh:0.36.0")
 
     //Material3
     implementation ("androidx.compose.material:material:1.7.0")
