@@ -1,13 +1,18 @@
 package uk.ac.tees.mad.SV.Presentation.Screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowLeft
 import androidx.compose.material3.Button
@@ -15,7 +20,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -31,7 +35,7 @@ import uk.ac.tees.mad.SV.ui.theme.lobster
 @Composable
 fun ImageDetailScreen(navController: NavHostController, viewModel: SpaceViewModel) {
     val apod = viewModel.apod
-    androidx.compose.material3.Surface(
+    Surface(
         modifier = Modifier.fillMaxSize(),
         color = colorScheme.background
     ) {
@@ -43,11 +47,11 @@ fun ImageDetailScreen(navController: NavHostController, viewModel: SpaceViewMode
                             imageVector = Icons.Rounded.KeyboardArrowLeft,
                             contentDescription = null,
                             modifier = Modifier.size(40.dp)
+                                .clickable { navController.navigateUp() }
                         )
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent, // Transparent background
-                        titleContentColor = Color.White // Adjust text/icon color for contrast
+                    colors = TopAppBarDefaults.smallTopAppBarColors(
+                        containerColor = Color.Transparent,
                     ),
                     modifier = Modifier.background(Color.Transparent)
                 )
@@ -58,7 +62,7 @@ fun ImageDetailScreen(navController: NavHostController, viewModel: SpaceViewMode
                     .fillMaxSize()
                     .padding(it)
             ) {
-                Card(modifier = Modifier.padding(horizontal = 12.dp, vertical = 50.dp)) {
+                Card(modifier = Modifier.padding(horizontal = 12.dp, vertical = 20.dp).verticalScroll(rememberScrollState())) {
                     Column {
                         AsyncImage(model = apod.value!!.hdurl, contentDescription = null)
                         Text(
@@ -73,7 +77,7 @@ fun ImageDetailScreen(navController: NavHostController, viewModel: SpaceViewMode
                             modifier = Modifier.padding(4.dp)
                         )
                         Text(text = apod.value!!.explanation, modifier = Modifier.padding(4.dp))
-                        Button(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth()) {
+                        Button(onClick = { viewModel.insertIfNotExists(apod.value!!) }, modifier = Modifier.fillMaxWidth()) {
                             androidx.compose.material3.Text(text = "Save to Device")
                         }
                     }

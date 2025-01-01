@@ -214,7 +214,7 @@ fun SignUpScreen(navController: NavHostController, viewModel: SpaceViewModel) {
                         } else {
                             Toast.makeText(
                                 context,
-                                "Kindly put the credentials correctly! Use special characters.",
+                                "Kindly put the credentials correctly!",
                                 Toast.LENGTH_LONG
                             ).show()
                         }

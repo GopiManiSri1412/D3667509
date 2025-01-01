@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import uk.ac.tees.mad.SV.Presentation.Screen.HomeScreen
 import uk.ac.tees.mad.SV.Presentation.Screen.ImageDetailScreen
 import uk.ac.tees.mad.SV.Presentation.Screen.LoginScreen
+import uk.ac.tees.mad.SV.Presentation.Screen.ProfileScreen
 import uk.ac.tees.mad.SV.Presentation.Screen.SignUpScreen
 import uk.ac.tees.mad.SV.Presentation.Screen.SplashScreen
 import uk.ac.tees.mad.SV.Presentation.Viewmodel.SpaceViewModel
@@ -36,6 +37,9 @@ fun SpaceNavGraph(){
             }
             composable(route = SpaceNavigation.ImageDetailScreen.route){
                 ImageDetailScreen(navController = navController, viewModel = viewModel)
+            }
+            composable(route = SpaceNavigation.ProfileScreen.route){
+                ProfileScreen(navController = navController, viewModel = viewModel)
             }
         }
     }

@@ -10,31 +10,52 @@ import com.google.api.Authentication
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import uk.ac.tees.mad.SV.Data.Local.ApodDao
 import uk.ac.tees.mad.SV.Data.Remote.Apod
 import uk.ac.tees.mad.SV.Data.Remote.NasaApi
+import uk.ac.tees.mad.SV.Data.Remote.UserData
 import javax.inject.Inject
 
 @HiltViewModel
 class SpaceViewModel @Inject constructor(
     private val authentication: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    private val api: NasaApi
+    private val api: NasaApi,
+    private val apodDao: ApodDao
 ) : ViewModel() {
 
+    val apodOffline = MutableStateFlow<List<Apod>?>(null)
+    val userData = mutableStateOf(UserData())
     val loading = mutableStateOf(false)
     val signed = mutableStateOf(false)
     val apod = mutableStateOf<Apod?>(null)
-
     init {
-        if (authentication.currentUser != null) {
+        if(authentication.currentUser != null){
             signed.value = true
             getUserDetails()
             fetchApi()
         }
     }
 
-    fun signUp(context: Context, name: String, email: String, password: String) {
+    fun getFromApodDatabase(){
+        viewModelScope.launch {
+            apodOffline.value = apodDao.getAll()
+        }
+    }
+
+    suspend fun getApodByTitle(title: String): Apod? {
+        return apodDao.getApodByTitle(title)
+    }
+
+    fun insertIfNotExists(apod: Apod) {
+        viewModelScope.launch {
+            apodDao.insertIfNotExists(apod)
+        }
+    }
+
+    fun signUp(context: Context, name: String, email: String, password:String){
         loading.value = true
         authentication.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
             val user = hashMapOf(
@@ -46,32 +67,37 @@ class SpaceViewModel @Inject constructor(
                 loading.value = false
                 signed.value = true
                 getUserDetails()
-                Toast.makeText(context, "Sign up successful", Toast.LENGTH_LONG).show()
+                Toast.makeText(context,"Sign up successful",Toast.LENGTH_LONG).show()
             }.addOnFailureListener {
                 loading.value = false
-                Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
+                Toast.makeText(context,"Sign up failed",Toast.LENGTH_LONG).show()
             }
         }.addOnFailureListener {
             loading.value = false
-            Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
+            Toast.makeText(context,"Sign up failed",Toast.LENGTH_LONG).show()
         }
     }
 
-    fun logIn(context: Context, email: String, password: String) {
+    fun logIn(context: Context, email: String, password: String){
         loading.value = true
         authentication.signInWithEmailAndPassword(email, password).addOnSuccessListener {
             loading.value = false
             signed.value = true
             getUserDetails()
-            Toast.makeText(context, "Log in successful", Toast.LENGTH_LONG).show()
+            Toast.makeText(context,"Log in successful",Toast.LENGTH_LONG).show()
         }.addOnFailureListener {
             loading.value = false
-            Toast.makeText(context, "Log in failed", Toast.LENGTH_LONG).show()
+            Toast.makeText(context,"Log in failed",Toast.LENGTH_LONG).show()
 
         }
     }
 
     private fun getUserDetails() {
+        firestore.collection("users").document(authentication.currentUser!!.email!!).get().addOnSuccessListener {
+            userData.value = it.toObject(UserData::class.java)!!
+        }.addOnFailureListener {
+            Log.d("Error",it.message.toString())
+        }
     }
 
     fun fetchApi() {
