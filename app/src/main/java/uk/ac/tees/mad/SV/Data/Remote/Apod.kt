@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "apod")
 data class Apod(
     @PrimaryKey(autoGenerate = true) val id : Int = 0,
-    val copyright: String?,
+    val copyright: String? = "",
     val date: String,
     val explanation: String,
     val hdurl: String,

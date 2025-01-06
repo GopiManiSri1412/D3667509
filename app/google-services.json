@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "892695531689",
-    "project_id": "space-viewer-app",
+    "project_number": "402921887993",
+    "project_id": "spaceviewer-36bea",
     "storage_bucket": "space-viewer-app.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:892695531689:android:cca86fdc06590cf29799b8",
+        "mobilesdk_app_id": "1:402921887993:android:76c042c79dc5fdcbd86a28",
         "android_client_info": {
           "package_name": "uk.ac.tees.mad.SV"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCLdwzXoPt8XJ0tI6TToQVkzbGinXpf9F4"
+          "current_key": "AIzaSyAAs04gU4VBmh-3mK0ma9l6r_LUyyJXhWk"
         }
       ],
       "services": {
